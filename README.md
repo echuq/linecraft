@@ -2,6 +2,8 @@
 
 The same customers, three ways to line up.
 
+**[Open the playground](https://echuq.github.io/linecraft/)** · [Tests](https://github.com/echuq/linecraft/actions/workflows/test.yml)
+
 Linecraft is a small browser playground for the queue you didn't choose. Compare
 one shared line with separate windows, change how unpredictable service is, and
 replay what happened. No framework, packages, account, or external data.
