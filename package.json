@@ -1,0 +1,14 @@
+{
+  "name": "linecraft",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An offline queue playground: the same customers, three ways to line up.",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test",
+    "check": "node --check public/engine.js && node --check public/app.js && node --check scripts/serve.mjs"
+  },
+  "engines": { "node": ">=22" },
+  "license": "MIT"
+}

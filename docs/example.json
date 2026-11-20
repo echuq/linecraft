@@ -1,0 +1,61 @@
+{
+  "config": {
+    "servers": 3,
+    "arrivalRate": 2.4,
+    "serviceMean": 1,
+    "variability": "very-variable",
+    "duration": 30,
+    "seed": 42
+  },
+  "customers": 62,
+  "results": [
+    {
+      "policy": "shared",
+      "stats": {
+        "count": 62,
+        "meanWait": 0.13602801306759982,
+        "p95Wait": 0.7716735136570098,
+        "maxWait": 1.0242724675275134,
+        "meanSojourn": 0.9811669272760407,
+        "averageQueue": 0.2680425340631133,
+        "averageInSystem": 1.9333846286153715,
+        "throughput": 1.9704951062536522,
+        "utilization": 0.5551140315174191,
+        "maxQueue": 4
+      },
+      "endTime": 31.464173548685302
+    },
+    {
+      "policy": "shortest",
+      "stats": {
+        "count": 62,
+        "meanWait": 0.1791552698341808,
+        "p95Wait": 1.1208518966688876,
+        "maxWait": 1.970304361277858,
+        "meanSojourn": 1.0242941840426218,
+        "averageQueue": 0.3529522886434545,
+        "averageInSystem": 2.017953347599758,
+        "throughput": 1.9700915801702816,
+        "utilization": 0.5550003529854343,
+        "maxQueue": 4
+      },
+      "endTime": 31.47061823117945
+    },
+    {
+      "policy": "random",
+      "stats": {
+        "count": 62,
+        "meanWait": 0.5573226826825153,
+        "p95Wait": 2.432903822113679,
+        "maxWait": 3.0695798918094184,
+        "meanSojourn": 1.4024615968909553,
+        "averageQueue": 1.08437726638778,
+        "averageInSystem": 2.728755745828477,
+        "throughput": 1.9456901721071826,
+        "utilization": 0.548126159813566,
+        "maxQueue": 4
+      },
+      "endTime": 31.86529946484439
+    }
+  ]
+}

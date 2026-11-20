@@ -1,0 +1,12 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+const root = new URL('../', import.meta.url);
+let html = await readFile(new URL('public/index.html', root), 'utf8');
+const css = await readFile(new URL('public/style.css', root), 'utf8');
+const engine = (await readFile(new URL('public/engine.js', root), 'utf8')).replace(/^export /gm, '');
+const app = (await readFile(new URL('public/app.js', root), 'utf8')).replace(/^import .*;\r?\n/, '');
+html = html.replace('<link rel="stylesheet" href="./style.css">', `<style>${css}</style>`);
+html = html.replace('<script type="module" src="./app.js"></script>', `<script type="module">${engine}\n${app}</script>`);
+html = html.replace('href="./" aria-label="Linecraft home"', 'href="./linecraft.html" aria-label="Linecraft home"');
+await mkdir(new URL('dist/', root), { recursive: true });
+await writeFile(new URL('dist/linecraft.html', root), html);
+console.log('Built dist/linecraft.html — open directly in a browser.');

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The same customers, three ways to line up. An offline playground for queueing, waiting, and the line you didn't choose.">
+  <meta name="theme-color" content="#f5f7fa">
+  <title>Linecraft — a small experiment in waiting</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23192736'/%3E%3Cpath d='M17 18h30M17 32h20M17 46h10' stroke='%23ff9a64' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Linecraft home"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M5 7h20M5 15h14M5 23h8"/></svg>linecraft<span class="version">v0.1</span></a>
+    <nav aria-label="Main"><a href="#how-it-works">How it works</a><a href="https://github.com/echuq/linecraft">Source code</a></nav>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="title">
+      <div><p class="eyebrow">A SMALL EXPERIMENT IN WAITING</p><h1 id="title">The other line isn't<br>always faster.</h1></div>
+      <p class="lede">One line or many? Send the same customers through three different setups. Change a few things. See who waits.</p>
+    </section>
+    <div class="workspace">
+      <aside class="controls" aria-labelledby="setup-title">
+        <div class="panel-title"><h2 id="setup-title">Set the scene</h2><span>minutes, not hours</span></div>
+        <div class="presets" role="group" aria-label="Scenario presets"><button type="button" data-preset="coffee" class="selected">Coffee shop</button><button type="button" data-preset="checkout">Checkouts</button><button type="button" data-preset="rush">Lunch rush</button></div>
+        <form id="settings">
+          <div class="field"><label for="servers">Service windows <output id="servers-value">3</output></label><input id="servers" name="servers" type="range" min="1" max="12" step="1" value="3"><div class="range-labels"><span>1 window</span><span>12 windows</span></div></div>
+          <div class="field"><label for="arrivalRate">Arrivals per minute</label><input id="arrivalRate" name="arrivalRate" type="number" min="0.1" max="30" step="0.1" value="2.4" required></div>
+          <div class="field"><label for="serviceMean">Average service time <span>min</span></label><input id="serviceMean" name="serviceMean" type="number" min="0.1" max="30" step="0.1" value="1" required></div>
+          <div class="field"><label for="variability">Service time variation</label><select id="variability" name="variability"><option value="steady">None · everyone takes the same time</option><option value="variable">Some · a little unpredictable</option><option value="very-variable" selected>Lots · quick orders, slow orders</option></select></div>
+          <div class="field"><label for="duration">Keep arriving for <span>min</span></label><input id="duration" name="duration" type="number" min="1" max="120" step="1" value="30" required></div>
+          <div class="seed-row"><label for="seed">Seed</label><input id="seed" name="seed" type="number" min="0" max="4294967295" step="1" value="42" required><button type="button" id="new-seed" aria-label="Choose a new random seed" title="New seed">Shuffle</button></div>
+          <button class="run-button" type="submit">Run experiment</button>
+        </form>
+        <div class="load-box"><div><span>Expected load</span><strong id="load-value">80%</strong></div><div class="load-track"><div id="load-fill"></div></div><p id="load-note">Some breathing room, but queues can still form.</p></div>
+        <p class="local-note">Runs on your device. No account,<br>no uploads, no live data.</p>
+      </aside>
+      <div class="results">
+        <div id="error" class="error" role="alert" hidden></div>
+        <section aria-labelledby="results-title">
+          <div class="section-bar"><h2 id="results-title">Same people. Different lines.</h2><span id="run-count" class="secondary"></span></div>
+          <div class="summary-grid" id="summaries" aria-live="polite"></div>
+          <p class="results-note">Waits cover every arrival, including those served after closing. One seeded run, not a universal ranking.</p>
+        </section>
+        <section class="chart-panel" aria-labelledby="chart-title">
+          <div class="section-bar"><div><h2 id="chart-title">How the queue builds</h2><p class="secondary">People waiting · not including people being served</p></div><div class="legend"><span class="shared">Shared</span><span class="shortest">Shortest</span><span class="random">Random</span></div></div>
+          <div id="queue-chart" class="chart"></div>
+        </section>
+        <section class="replay-panel" aria-labelledby="replay-title">
+          <div class="section-bar"><h2 id="replay-title">Watch the lines</h2><output id="replay-time" for="timeline">0:00</output></div>
+          <div class="playback"><button id="play" type="button" aria-label="Play simulation">Play</button><label class="sr-only" for="timeline">Replay time</label><input id="timeline" type="range" min="0" max="30" step="0.01" value="0"><span class="secondary" id="replay-end"></span></div>
+          <div class="replay-grid" id="replay"></div>
+          <div class="replay-key"><span><i class="person"></i> Waiting</span><span><i class="busy-key"></i> Being served</span><span>Long queues are abbreviated; counts are exact.</span></div>
+        </section>
+        <div class="result-footer"><span id="run-details"></span><div><a id="permalink" href="./">Link to this run</a><button id="export" type="button">Export CSV</button></div></div>
+      </div>
+    </div>
+    <section class="method" id="how-it-works" aria-labelledby="method-title">
+      <div><p class="eyebrow">UNDER THE HOOD</p><h2 id="method-title">A fair comparison,<br>not a crystal ball.</h2></div>
+      <div class="method-content"><p>Customers arrive at random, with a constant average rate (a Poisson process). Each gets a service time before the comparison starts. Every setup uses those exact same arrivals and service times.</p>
+        <div class="method-grid"><div><h3>One shared line</h3><p>The next person goes to the first available window. First come, first served.</p></div><div><h3>Shortest line</h3><p>Pick the line with the fewest people, including the person being served. Break ties randomly. No switching.</p></div><div><h3>Random line</h3><p>Choose any window with equal probability. Stay in that line until you're served.</p></div></div>
+        <p>“Some variation” uses an Erlang distribution with shape 4; “lots” uses an exponential distribution. “None” gives everyone the same service time. After arrivals stop, the simulation runs until everyone is done.</p>
+        <p class="method-limit">No breaks, abandonment, priority customers, walking time, or real-world measurements. The animation replays an already-computed result. At 100% expected load or above, don't interpret this finite run as a stable long-run system.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>linecraft · made for the line you didn't choose.</span><a href="https://github.com/echuq">Chu / echuq</a></footer>
+</body>
+</html>
